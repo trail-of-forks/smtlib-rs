@@ -1,0 +1,5 @@
+---
+source: lowlevel/src/tests.rs
+expression: "d.exec(&Command::parse(r#\"(echo \"Hello, unmatched paren! :)\")\"#)?)?"
+---
+SpecificSuccessResponse(EchoResponse(EchoResponse("\"Hello, unmatched paren! :)\"")))

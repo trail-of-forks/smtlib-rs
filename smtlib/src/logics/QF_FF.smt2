@@ -11,4 +11,9 @@
  "
 
  :theories (FieldElements)
+
+ :language
+ "Finite Field Arithmetic"
+ :notes
+ "Finite Field Arithmetic"
 )

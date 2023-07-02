@@ -77,7 +77,7 @@ fn main() -> miette::Result<()> {
 
     match std::env::args().nth(1).as_deref().unwrap_or("z3") {
         "z3" => queens(Z3Binary::new("z3").into_diagnostic()?)?,
-        "z3-static" => queens(Z3Static::new().into_diagnostic()?)?,
+        "z3-static" => queens(Z3Static::new(&None).into_diagnostic()?)?,
         "cvc5" => queens(Cvc5Binary::new("cvc5").into_diagnostic()?)?,
         given => miette::bail!(
             "Invalid backend: '{}'. Available backends are: 'z3', 'z3-static', 'cvc5'",

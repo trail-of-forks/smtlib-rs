@@ -12,7 +12,7 @@ impl Z3Static {
             ctx: unsafe {
                 let cfg = z3_sys::Z3_mk_config();
                 if let Some(timeout) = timeout {
-                    z3_sys::Z3_set_param_value(cfg, CString::new("timeout").unwrap().as_ptr(), timeout.to_string().as_ptr());
+                    z3_sys::Z3_set_param_value(cfg, CString::new("timeout").unwrap().as_ptr(), CString::new(timeout.to_string()).unwrap().as_ptr());
                 }
                 let ctx = z3_sys::Z3_mk_context_rc(cfg);
                 z3_sys::Z3_set_error_handler(ctx, None);

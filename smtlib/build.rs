@@ -49,6 +49,7 @@ fn main() -> miette::Result<()> {
     let logics = logics()?;
 
     for Logic(name, attrs) in &logics {
+        println!("Debug logic {:?}, attrs {:?}", name, attrs);
         let language = attrs
             .iter()
             .find_map(|a| match a {

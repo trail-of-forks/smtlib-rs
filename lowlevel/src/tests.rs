@@ -45,7 +45,9 @@ mod z3_static {
 
     #[test]
     fn echo_test() -> Result<(), Box<dyn std::error::Error>> {
-        let mut d = Driver::new(Z3Static::new()?)?;
+        // Use dummy timeout of 60s
+        let timeout = Some(60);
+        let mut d = Driver::new(Z3Static::new(&timeout)?)?;
 
         cmd!(d, r#"(echo "Hello, world!")"#);
         cmd!(d, r#"(echo "Hello, unmatched paren! :)")"#);
