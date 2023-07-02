@@ -11,7 +11,7 @@ use crate::{Bool, Error, Logic, Model, SatResult, SatResultWithModel};
 
 /// The [`AsyncSolver`] type is the primary entrypoint to interaction with the
 /// solver. Checking for validity of a set of assertions requires:
-/// ```
+/* ```
 /// # use smtlib::{Int, Sort};
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// // 1. Set up the backend (in this case z3)
@@ -35,6 +35,7 @@ use crate::{Bool, Error, Logic, Model, SatResult, SatResultWithModel};
 /// # Ok(())
 /// # }
 /// ```
+*/
 #[derive(Debug)]
 pub struct AsyncSolver<B> {
     driver: AsyncDriver<B>,

@@ -46,7 +46,7 @@ impl From<Term> for FieldElement {
 impl Sort for FieldElement {
     type Inner = Self;
     fn sort() -> ast::Sort {
-        ast::Sort::Sort(Identifier::Simple(Symbol("FieldElement".into())))
+        ast::Sort::Sort(Identifier::Simple(Symbol("F".into())))
     }
 }
 impl From<i64> for FieldElement {
@@ -87,3 +87,41 @@ impl_op!(FieldElement, i64, Add, add, "+", AddAssign, add_assign, +);
 impl_op!(FieldElement, i64, Sub, sub, "-", SubAssign, sub_assign, -);
 impl_op!(FieldElement, i64, Mul, mul, "*", MulAssign, mul_assign, *);
 impl_op!(FieldElement, i64, Div, div, "div", DivAssign, div_assign, /);
+
+#[cfg(test)]
+mod tests {
+    use smtlib_lowlevel::backend::{Z3Binary, Z3Static};
+
+    use crate::{terms::Sort, Solver};
+
+    use super::FieldElement;
+    use std::ops::Mul;
+
+    #[test]
+    fn finite_field_element_assertions() -> Result<(), Box<dyn std::error::Error>> {
+        let a = FieldElement::from(2);
+        let b = FieldElement::from(5);
+        let c = FieldElement::from(0);
+
+        let mut solver = Solver::new(Z3Static::new(&None)?)?;
+
+        solver.assert(a.mul(b)._eq(c));
+        let model = solver.check_sat_with_model()?.expect_sat()?;
+        /* 
+        solver.assert(a._eq(!d))?;
+        solver.assert(b._eq(a.extract::<5, 2>()))?;
+        solver.assert(c._eq(a.concat(b)))?;
+
+        let model = solver.check_sat_with_model()?.expect_sat()?;
+
+        let a: [bool; 6] = model.eval(a).unwrap().try_into()?;
+        let b: [bool; 4] = model.eval(b).unwrap().try_into()?;
+        let c: [bool; 10] = model.eval(c).unwrap().try_into()?;
+        insta::assert_ron_snapshot!(a, @"(false, true, false, false, true, false)");
+        insta::assert_ron_snapshot!(b, @"(false, true, false, false)");
+        insta::assert_ron_snapshot!(c, @"(false, true, false, false, true, false, false, true, false, false)");
+        */
+
+        Ok(())
+    }
+}
