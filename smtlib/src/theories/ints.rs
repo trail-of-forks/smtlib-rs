@@ -92,3 +92,4 @@ impl_op!(Int, i64, Add, add, "+", AddAssign, add_assign, +);
 impl_op!(Int, i64, Sub, sub, "-", SubAssign, sub_assign, -);
 impl_op!(Int, i64, Mul, mul, "*", MulAssign, mul_assign, *);
 impl_op!(Int, i64, Div, div, "div", DivAssign, div_assign, /);
+impl_op!(Int, i64, Rem, rem, "mod", RemAssign, rem_assign, %);

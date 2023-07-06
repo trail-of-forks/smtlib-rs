@@ -32,17 +32,6 @@ fn queens_ff<B: Backend>(backend: B) -> miette::Result<()> {
 
     solver.assert(n._eq(8))?;
 
-    solver.assert(and([
-        and([x0.ge(0), x0.lt(n)]),
-        and([x1.ge(0), x1.lt(n)]),
-        and([x2.ge(0), x2.lt(n)]),
-        and([x3.ge(0), x3.lt(n)]),
-        and([x4.ge(0), x4.lt(n)]),
-        and([x5.ge(0), x5.lt(n)]),
-        and([x6.ge(0), x6.lt(n)]),
-        and([x7.ge(0), x7.lt(n)]),
-    ]))?;
-
     solver.assert(distinct(xs))?;
 
     solver.assert(distinct([
@@ -80,7 +69,7 @@ fn queens_ff<B: Backend>(backend: B) -> miette::Result<()> {
 fn main() -> miette::Result<()> {
     miette::set_panic_hook();
 
-    match std::env::args().nth(1).as_deref().unwrap_or("z3") {
+    match std::env::args().nth(1).as_deref().unwrap_or("cvc5") {
         "z3" => queens_ff(Z3Binary::new("z3").into_diagnostic()?)?,
         "z3-static" => queens_ff(Z3Static::new(&None).into_diagnostic()?)?,
         "cvc5" => queens_ff(Cvc5Binary::new("cvc5").into_diagnostic()?)?,

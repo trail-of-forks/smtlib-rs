@@ -58,22 +58,6 @@ impl FieldElement {
     fn binop<T: From<Term>>(self, op: &str, other: FieldElement) -> T {
         fun(op, vec![self.into(), other.into()]).into()
     }
-    /// Construct the term expressing `(> self other)`
-    pub fn gt(self, other: impl Into<Self>) -> Bool {
-        self.binop(">", other.into())
-    }
-    /// Construct the term expressing `(>= self other)`
-    pub fn ge(self, other: impl Into<Self>) -> Bool {
-        self.binop(">=", other.into())
-    }
-    /// Construct the term expressing `(< self other)`
-    pub fn lt(self, other: impl Into<Self>) -> Bool {
-        self.binop("<", other.into())
-    }
-    /// Construct the term expressing `(<= self other)`
-    pub fn le(self, other: impl Into<Self>) -> Bool {
-        self.binop("<=", other.into())
-    }
 }
 
 impl std::ops::Neg for FieldElement {
@@ -83,10 +67,10 @@ impl std::ops::Neg for FieldElement {
     }
 }
 
+// TODO: Change "+" to "FF.add" and so on
 impl_op!(FieldElement, i64, Add, add, "+", AddAssign, add_assign, +);
 impl_op!(FieldElement, i64, Sub, sub, "-", SubAssign, sub_assign, -);
 impl_op!(FieldElement, i64, Mul, mul, "*", MulAssign, mul_assign, *);
-impl_op!(FieldElement, i64, Div, div, "div", DivAssign, div_assign, /);
 
 #[cfg(test)]
 mod tests {

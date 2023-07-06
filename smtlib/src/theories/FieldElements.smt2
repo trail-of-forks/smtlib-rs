@@ -3,8 +3,8 @@
  :smt-lib-version 2.6
  :smt-lib-release "2017-11-24"
  :written-by "Xiangan He"
- :date "2010-04-17"
- :last-updated "2015-04-25"
+ :date "2023-07-05"
+ :last-updated "2023-07-05"
  :update-history
  "Note: history only accounts for content changes, not release changes.
   2015-04-25 Updated to Version 2.5.
@@ -16,12 +16,6 @@
         (+ F F F :left-assoc) 
         (* F F F :left-assoc)
         (- F F F :left-assoc) 
-        (div F F F :left-assoc)
-        (mod F F F)
-        (<= F F Bool :chainable)
-        (<  F F Bool :chainable)
-        (>= F F Bool :chainable)
-        (>  F F Bool :chainable)
        )
 
  :funs_description
@@ -91,7 +85,7 @@
 
  (declare-fun a () F)
  (declare-fun b () F)
-
+ ; TODO: Need to separate out logic for z3
  ; ab = 1
  (assert (= (* a b) (as 1 F)))
 
