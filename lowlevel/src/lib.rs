@@ -51,7 +51,7 @@ where
         Ok(driver)
     }
     pub fn exec(&mut self, cmd: &Command) -> Result<GeneralResponse, Error> {
-        // println!("> {cmd}");
+        println!("> {cmd}");
         let res = self.backend.exec(cmd)?;
         let res = if let Some(res) = cmd.parse_response(&res)? {
             GeneralResponse::SpecificSuccessResponse(res)

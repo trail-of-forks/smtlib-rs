@@ -10,7 +10,7 @@
   2015-04-25 Updated to Version 2.5.
  "
 
- :theories (FieldElements)
+ :theories ( FieldElements )
 
  :language
  "The language for this logic, QF_FF, is one that handles Quantifier-Free Finite Field arithmetic. Finite fields, also called Galois fields, are algebraic structures in which all operations (addition, subtraction, multiplication, and division, excluding division by zero) are well defined. Quantifier-free indicates that no universal or existential quantifiers are used in this logic, meaning statements are about specific objects in the domain, not generalities.

@@ -47,6 +47,29 @@ impl<T> std::ops::Deref for Const<T> {
     }
 }
 
+/// This struct wraps specific instances of other terms to indicate that they
+/// are funs. Constants are named terms whose value can be extracted from a
+/// model using [`Model::eval`](crate::Model::eval).
+///
+/// To construct a `Const<T>` call [`T::from_name`](Sort::from_name) where `T`
+/// implements [`Sort`].
+#[derive(Debug, Clone, Copy)]
+pub struct Fun<T>(pub(crate) &'static str, pub(crate) T);
+
+impl<T> Fun<T> {
+    /// The name of the constant
+    pub fn name(&self) -> &str {
+        self.0
+    }
+}
+impl<T> std::ops::Deref for Fun<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.1
+    }
+}
+
 /// This type wraps terms loosing all static type information. It is particular
 /// useful when constructing terms dynamically.
 #[derive(Debug, Clone, Copy)]

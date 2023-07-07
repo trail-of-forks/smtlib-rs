@@ -13,6 +13,8 @@ use smtlib::{
 };
 use smtlib::theories::fieldelements::FieldElement;
 
+
+/* 
 fn queens_ff<B: Backend>(backend: B) -> miette::Result<()> {
     let x0 = FieldElement::from_name("x0");
     let x1 = FieldElement::from_name("x1");
@@ -65,10 +67,14 @@ fn queens_ff<B: Backend>(backend: B) -> miette::Result<()> {
 
     Ok(())
 }
+*/
 
 fn main() -> miette::Result<()> {
     miette::set_panic_hook();
+    Ok(())
+}
 
+    /* 
     match std::env::args().nth(1).as_deref().unwrap_or("cvc5") {
         "z3" => queens_ff(Z3Binary::new("z3").into_diagnostic()?)?,
         "z3-static" => queens_ff(Z3Static::new(&None).into_diagnostic()?)?,
@@ -81,3 +87,5 @@ fn main() -> miette::Result<()> {
 
     Ok(())
 }
+
+*/

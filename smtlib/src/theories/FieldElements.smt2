@@ -9,14 +9,6 @@
  "Note: history only accounts for content changes, not release changes.
   2015-04-25 Updated to Version 2.5.
  "
- 
- :sorts ((F 0))
-
- :funs ((NUMERAL F) 
-        (+ F F F :left-assoc) 
-        (* F F F :left-assoc)
-        (- F F F :left-assoc) 
-       )
 
  :funs_description
  "All ranked function symbols of the form
@@ -40,8 +32,6 @@
 
   - (_ divisible n) as the function mapping to true all and only
     the integers that are divisible by n,
-
-  - abs as the absolute value function,
 
   - div and mod according to Boute's Euclidean definition [1], that is,
     so as to satify the formula
@@ -77,27 +67,4 @@
   The same observation applies here to terms of the form (div t 0) and
   (mod t 0).
  "
-
- (set-logic QF_FF)
- (set-option :incremental true)
-
- (define-sort F () (_ FiniteField 5))
-
- (declare-fun a () F)
- (declare-fun b () F)
- ; TODO: Need to separate out logic for z3
- ; ab = 1
- (assert (= (* a b) (as 1 F)))
-
- ; a = 2
- (assert (= a (as 2 F)))
-
- ; SAT
- (check-sat)
-
- ; b = 2
- (assert (= b (as 2 F)))
-
- ; UNSAT
- (check-sat)
 )

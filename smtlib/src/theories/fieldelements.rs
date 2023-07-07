@@ -1,14 +1,13 @@
 #![doc = concat!("```ignore\n", include_str!("./FieldElements.smt2"), "```")]
 
 use smtlib_lowlevel::{
-    ast::{self, Identifier, Term},
+    ast::{self, Identifier, Term, Command},
     lexicon::Symbol,
 };
 
 use crate::{
     impl_op,
     terms::{fun, qual_ident, Const, Dynamic, Sort},
-    Bool,
 };
 
 /// A [`Int`] is a term containing a
@@ -51,46 +50,75 @@ impl Sort for FieldElement {
 }
 impl From<i64> for FieldElement {
     fn from(i: i64) -> Self {
-        Term::Identifier(qual_ident(i.to_string(), None)).into()
+        Term::Identifier(qual_ident(format!("(as ff{i} F)"), None)).into()
     }
 }
 impl FieldElement {
     fn binop<T: From<Term>>(self, op: &str, other: FieldElement) -> T {
         fun(op, vec![self.into(), other.into()]).into()
     }
+    fn unop<T: From<Term>>(self, op: &str) -> T {
+        fun(op, vec![self.into()]).into()
+    }
 }
 
 impl std::ops::Neg for FieldElement {
     type Output = Self;
     fn neg(self) -> Self::Output {
-        fun("-", vec![self.into()]).into()
+        fun("ff.neg", vec![self.into()]).into()
     }
 }
 
-// TODO: Change "+" to "FF.add" and so on
-impl_op!(FieldElement, i64, Add, add, "+", AddAssign, add_assign, +);
-impl_op!(FieldElement, i64, Sub, sub, "-", SubAssign, sub_assign, -);
-impl_op!(FieldElement, i64, Mul, mul, "*", MulAssign, mul_assign, *);
+impl_op!(FieldElement, i64, Add, add, "ff.add", AddAssign, add_assign, +);
+impl_op!(FieldElement, i64, Mul, mul, "ff.mul", MulAssign, mul_assign, *);
 
 #[cfg(test)]
 mod tests {
-    use smtlib_lowlevel::backend::{Z3Binary, Z3Static};
+    use num_bigint::BigUint;
+    use smtlib_lowlevel::{backend::{Cvc5Binary}, ast::{self, Command, Identifier, Term, SpecConstant}, lexicon::{Symbol,Numeral}};
 
-    use crate::{terms::Sort, Solver};
+    use crate::{terms::Sort, Solver, SatResult};
 
     use super::FieldElement;
     use std::ops::Mul;
 
     #[test]
     fn finite_field_element_assertions() -> Result<(), Box<dyn std::error::Error>> {
-        let a = FieldElement::from(2);
-        let b = FieldElement::from(5);
-        let c = FieldElement::from(0);
+        // Reimplement finite_field.smt2 example file tests
+        // Use CVC5 solver
+        let mut backend = Cvc5Binary::new("src/theories/cvc5")?;
+        // Use solver's exec method to set the sort of finite field
+        // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
+        let mut solver = Solver::new(backend)?;
+        solver.set_logic(crate::Logic::QF_FF)?;
+        // Let prime be 5
+        let prime = BigUint::from(5u32);
+        solver.set_field_order(&prime)?;
+        
+        // "a" and "b" are not constants, but fun
+        let a = FieldElement::from_name("a");
+        let b = FieldElement::from_name("b");
+        let one = FieldElement::from(1);
+        let two = FieldElement::from(2);
 
-        let mut solver = Solver::new(Z3Static::new(&None)?)?;
-
-        solver.assert(a.mul(b)._eq(c));
-        let model = solver.check_sat_with_model()?.expect_sat()?;
+        // SAT
+        solver.assert(a.mul(b)._eq(one))?;
+        solver.assert(a._eq(two))?;
+        
+        // let model = solver.check_sat_with_model()?.expect_sat()?;
+        let sat_result = solver.check_sat()?;
+        println!("Debug sat {:?}", sat_result);
+        let sat_string = format!("{:?}", sat_result);
+        let sat_expected = format!("{:?}", SatResult::Sat);
+        assert!(sat_expected == sat_string);    
+    
+        // Now, assert for UnSat
+        solver.assert(b._eq(two))?;
+        let sat_result = solver.check_sat()?;
+        println!("Debug sat {:?}", sat_result);
+        let sat_string = format!("{:?}", sat_result);
+        let sat_expected = format!("{:?}", SatResult::Unsat);
+        assert!(sat_expected == sat_string);  
         /* 
         solver.assert(a._eq(!d))?;
         solver.assert(b._eq(a.extract::<5, 2>()))?;

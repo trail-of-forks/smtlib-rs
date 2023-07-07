@@ -25,6 +25,7 @@ miette = { version = "5.5.0", features = ["fancy"] }
 thiserror = "1.0.38"
 smtlib-lowlevel = { path = "../lowlevel", version = "0.1.5" }
 serde = { version = "1.0.152", features = ["derive"], optional = true }
+num-bigint = "0.4.3"
 
 [dev-dependencies]
 insta = { version = "1.23.0", features = ["ron"] }

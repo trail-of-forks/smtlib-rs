@@ -7,6 +7,8 @@ use smtlib_lowlevel::{
     Driver,
 };
 
+use num_bigint::BigUint;
+
 use crate::{Bool, Error, Logic, Model, SatResult, SatResultWithModel};
 
 /// The [`Solver`] type is the primary entrypoint to interaction with the
@@ -37,7 +39,7 @@ use crate::{Bool, Error, Logic, Model, SatResult, SatResultWithModel};
 /// ```
 #[derive(Debug)]
 pub struct Solver<B> {
-    driver: Driver<B>,
+    pub driver: Driver<B>,
     decls: HashMap<Identifier, ast::Sort>,
 }
 
@@ -61,13 +63,31 @@ where
     /// To read more about logics read the documentation of [`Logic`].
     pub fn set_logic(&mut self, logic: Logic) -> Result<(), Error> {
         let cmd = ast::Command::SetLogic(Symbol(logic.to_string()));
+        println!("Setting logic to {logic}");
         match self.driver.exec(&cmd)? {
             ast::GeneralResponse::Success => Ok(()),
-            ast::GeneralResponse::SpecificSuccessResponse(_) => todo!(),
-            ast::GeneralResponse::Unsupported => todo!(),
-            ast::GeneralResponse::Error(_) => todo!(),
+            ast::GeneralResponse::SpecificSuccessResponse(_) => panic!("Failed to set logic"),
+            ast::GeneralResponse::Unsupported => panic!("Failed to set logic - Unsupported"),
+            ast::GeneralResponse::Error(_) => panic!("Failed to set logic - Err"),
         }
     }
+
+    /// Explicitly sets the field order for the solver in FiniteField theory. For some backends this is not
+    /// required, as they will infer what ever logic fits the current program.
+    ///
+    /// To read more about logics read the documentation of [`Logic`].
+    pub fn set_field_order(&mut self, prime: &BigUint) -> Result<(), Error> {
+        let ff_sort = ast::Sort::Sort(Identifier::Simple(Symbol(format!("(_ FiniteField {prime})").into())));
+        let sort_command = ast::Command::DefineSort(Symbol("F".into()), vec![], ff_sort);
+        
+        match self.driver.exec(&sort_command)? {
+            ast::GeneralResponse::Success => Ok(()),
+            ast::GeneralResponse::SpecificSuccessResponse(_) => panic!("Failed to set field order"),
+            ast::GeneralResponse::Unsupported => panic!("Failed to set logic - Unsupported"),
+            ast::GeneralResponse::Error(_) => panic!("Failed to set logic - Err"),
+        }
+    }
+
     /// Adds the constraint of `b` as an assertion to the solver. To check for
     /// satisfiability call [`Solver::check_sat`] or
     /// [`Solver::check_sat_with_model`].
@@ -82,6 +102,7 @@ where
                         v.insert(s.clone());
                         match i {
                             Identifier::Simple(sym) => {
+                                // Want this to be declare-fun
                                 self.driver
                                     .exec(&ast::Command::DeclareConst(sym.clone(), s.clone()))?;
                             }

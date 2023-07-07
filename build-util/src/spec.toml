@@ -177,11 +177,11 @@ syntax = "( declare-datatype <symbol> <datatype_dec> )"
 [command.declare-datatypes]
 syntax = "( declare-datatypes ( <sort_dec>n+1 ) ( <datatype_dec>n+1 ) )"
 
-[command.declare-fun]
-syntax = "( declare-fun <symbol> ( <sort>* ) <sort> )"
-
 [command.declare-sort]
-syntax = "( declare-sort <symbol> <numeral> )"
+syntax = "( declare-sort <symbol> ( <sort>* ) <sort> )"
+
+[command.declare-fun]
+syntax = "( declare-fun <symbol> <numeral> )"
 
 [command.define-fun]
 syntax = "( define-fun <function_def> )"
