@@ -10,6 +10,8 @@ use crate::{
     terms::{fun, qual_ident, Const, Dynamic, Sort},
 };
 
+use num_bigint::BigUint;
+
 /// A [`FieldElement`] is a term containing a
 /// [finite field element](https://mathworld.wolfram.com/FiniteField.html). You can [read more
 /// here.](https://docs.circom.io/background/background/#arithmetic-circuits).
@@ -50,6 +52,11 @@ impl Sort for FieldElement {
 }
 impl From<i64> for FieldElement {
     fn from(i: i64) -> Self {
+        Term::Identifier(qual_ident(format!("(as ff{i} F)"), None)).into()
+    }
+}
+impl From<BigUint> for FieldElement {
+    fn from(i: BigUint) -> Self {
         Term::Identifier(qual_ident(format!("(as ff{i} F)"), None)).into()
     }
 }
@@ -148,6 +155,35 @@ mod tests {
         // 1 * a + 2 * b - 3 * c = 0
         solver.assert(one.mul(a).add(two.mul(b)).add(FieldElement::neg(three.mul(c)))._eq(FieldElement::from(0)))?;
 
+        let sat_result = solver.check_sat()?;
+        println!("Debug sat {:?}", sat_result);
+        let sat_string = format!("{:?}", sat_result);
+        let sat_expected = format!("{:?}", SatResult::Sat);
+        assert!(sat_expected == sat_string);  
+
+        Ok(())
+    }
+
+    #[test]
+    fn from_biguint_test() -> Result<(), Box<dyn std::error::Error>> {
+        let mut backend = Cvc5Binary::new("src/theories/cvc5")?;
+        // Use solver's exec method to set the sort of finite field
+        // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
+        let mut solver = Solver::new(backend)?;
+        solver.set_logic(crate::Logic::QF_FF)?;
+        // Let prime be 5
+        let prime = BigUint::from(5u32);
+        solver.set_field_order(&prime)?;
+
+        let a = FieldElement::from(BigUint::from(5u32));
+        let b = FieldElement::from(BigUint::from(5u32));
+        solver.assert(a._eq(b))?;
+
+        let sat_result = solver.check_sat()?;
+        println!("Debug Sat {:?}", sat_result);
+        let sat_string = format!("{:?}", sat_result);
+        let sat_expected = format!("{:?}", SatResult::Sat);
+        assert!(sat_expected == sat_string);
         Ok(())
     }
 }
