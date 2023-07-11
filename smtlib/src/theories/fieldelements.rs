@@ -77,7 +77,7 @@ mod tests {
     use crate::{terms::Sort, Solver, SatResult};
 
     use super::FieldElement;
-    use std::ops::Mul;
+    use std::ops::{Mul, Neg, Add};
 
     #[test]
     fn finite_field_element_assertions() -> Result<(), Box<dyn std::error::Error>> {
@@ -116,20 +116,37 @@ mod tests {
         let sat_string = format!("{:?}", sat_result);
         let sat_expected = format!("{:?}", SatResult::Unsat);
         assert!(sat_expected == sat_string);  
-        /* 
-        solver.assert(a._eq(!d))?;
-        solver.assert(b._eq(a.extract::<5, 2>()))?;
-        solver.assert(c._eq(a.concat(b)))?;
+        
+        Ok(())
+    }
 
-        let model = solver.check_sat_with_model()?.expect_sat()?;
+    #[test]
+    fn finite_field_operation_test() -> Result<(), Box<dyn std::error::Error>> {
+        let mut backend = Cvc5Binary::new("src/theories/cvc5")?;
+        // Use solver's exec method to set the sort of finite field
+        // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
+        let mut solver = Solver::new(backend)?;
+        solver.set_logic(crate::Logic::QF_FF)?;
+        // Let prime be 5
+        let prime = BigUint::from(5u32);
+        solver.set_field_order(&prime)?;
 
-        let a: [bool; 6] = model.eval(a).unwrap().try_into()?;
-        let b: [bool; 4] = model.eval(b).unwrap().try_into()?;
-        let c: [bool; 10] = model.eval(c).unwrap().try_into()?;
-        insta::assert_ron_snapshot!(a, @"(false, true, false, false, true, false)");
-        insta::assert_ron_snapshot!(b, @"(false, true, false, false)");
-        insta::assert_ron_snapshot!(c, @"(false, true, false, false, true, false, false, true, false, false)");
-        */
+        // Now, test + - * operations
+        let a = FieldElement::from_name("a");
+        let b = FieldElement::from_name("b");
+        let c = FieldElement::from_name("c");
+
+        let one = FieldElement::from(1);
+        let two = FieldElement::from(2);
+        let three = FieldElement::from(3);
+
+        solver.assert(one.neg()._eq(FieldElement::from(4)))?; 
+
+        // 1 * 2 + 2 * 2 = 1 * 1
+        solver.assert(one.mul(two).add(two.mul(two))._eq(one.mul(one)))?;
+
+        // 1 * a + 2 * b - 3 * c = 0
+        solver.assert(one.mul(a).add(two.mul(b)).add(FieldElement::neg(three.mul(c)))._eq(FieldElement::from(0)))?;
 
         Ok(())
     }
