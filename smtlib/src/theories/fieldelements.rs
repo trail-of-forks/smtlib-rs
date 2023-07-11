@@ -57,9 +57,6 @@ impl FieldElement {
     fn binop<T: From<Term>>(self, op: &str, other: FieldElement) -> T {
         fun(op, vec![self.into(), other.into()]).into()
     }
-    fn unop<T: From<Term>>(self, op: &str) -> T {
-        fun(op, vec![self.into()]).into()
-    }
 }
 
 impl std::ops::Neg for FieldElement {
