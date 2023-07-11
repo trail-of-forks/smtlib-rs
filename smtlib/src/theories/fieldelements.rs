@@ -10,9 +10,9 @@ use crate::{
     terms::{fun, qual_ident, Const, Dynamic, Sort},
 };
 
-/// A [`Int`] is a term containing a
-/// [integer](https://en.wikipedia.org/wiki/Integer). You can [read more
-/// here.](https://smtlib.cs.uiowa.edu/theories-Ints.shtml).
+/// A [`FieldElement`] is a term containing a
+/// [finite field element](https://mathworld.wolfram.com/FiniteField.html). You can [read more
+/// here.](https://docs.circom.io/background/background/#arithmetic-circuits).
 #[derive(Debug, Clone, Copy)]
 pub struct FieldElement(&'static Term);
 impl From<Const<FieldElement>> for FieldElement {
