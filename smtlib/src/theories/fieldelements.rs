@@ -1,7 +1,9 @@
 #![doc = concat!("```ignore\n", include_str!("./FieldElements.smt2"), "```")]
 
+use std::str::FromStr;
+
 use smtlib_lowlevel::{
-    ast::{self, Identifier, Term, Command},
+    ast::{self, Identifier, Term},
     lexicon::Symbol,
 };
 
@@ -11,6 +13,8 @@ use crate::{
 };
 
 use num_bigint::BigUint;
+use regex::Regex;
+use num_traits::Num;
 
 /// A [`FieldElement`] is a term containing a
 /// [finite field element](https://mathworld.wolfram.com/FiniteField.html). You can [read more
@@ -64,6 +68,16 @@ impl FieldElement {
     fn binop<T: From<Term>>(self, op: &str, other: FieldElement) -> T {
         fun(op, vec![self.into(), other.into()]).into()
     }
+
+    fn to_biguint(&self) -> BigUint {
+        // Remove irrelevant parts using a regex to match BigUints
+        let re = Regex::new(r"[0-9]+").unwrap();
+        let s = self.to_string();
+        let relevant_part = re.find(&s.as_str()).unwrap().as_str();
+        
+        let big_u = BigUint::from_str_radix(relevant_part, 10).expect("Invalid number");
+        big_u
+    }
 }
 
 impl std::ops::Neg for FieldElement {
@@ -79,7 +93,7 @@ impl_op!(FieldElement, i64, Mul, mul, "ff.mul", MulAssign, mul_assign, *);
 #[cfg(test)]
 mod tests {
     use num_bigint::BigUint;
-    use smtlib_lowlevel::{backend::{Cvc5Binary}, ast::{self, Command, Identifier, Term, SpecConstant}, lexicon::{Symbol,Numeral}};
+    use smtlib_lowlevel::backend::Cvc5Binary;
 
     use crate::{terms::Sort, Solver, SatResult};
 
@@ -90,7 +104,7 @@ mod tests {
     fn finite_field_element_assertions() -> Result<(), Box<dyn std::error::Error>> {
         // Reimplement finite_field.smt2 example file tests
         // Use CVC5 solver
-        let mut backend = Cvc5Binary::new("src/theories/cvc5")?;
+        let backend = Cvc5Binary::new("src/theories/cvc5")?;
         // Use solver's exec method to set the sort of finite field
         // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
         let mut solver = Solver::new(backend)?;
@@ -129,7 +143,7 @@ mod tests {
 
     #[test]
     fn finite_field_operation_test() -> Result<(), Box<dyn std::error::Error>> {
-        let mut backend = Cvc5Binary::new("src/theories/cvc5")?;
+        let backend = Cvc5Binary::new("src/theories/cvc5")?;
         // Use solver's exec method to set the sort of finite field
         // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
         let mut solver = Solver::new(backend)?;
@@ -166,7 +180,7 @@ mod tests {
 
     #[test]
     fn from_biguint_test() -> Result<(), Box<dyn std::error::Error>> {
-        let mut backend = Cvc5Binary::new("src/theories/cvc5")?;
+        let backend = Cvc5Binary::new("src/theories/cvc5")?;
         // Use solver's exec method to set the sort of finite field
         // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
         let mut solver = Solver::new(backend)?;
@@ -178,6 +192,37 @@ mod tests {
         let a = FieldElement::from(BigUint::from(5u32));
         let b = FieldElement::from(BigUint::from(5u32));
         solver.assert(a._eq(b))?;
+
+        let sat_result = solver.check_sat()?;
+        println!("Debug Sat {:?}", sat_result);
+        let sat_string = format!("{:?}", sat_result);
+        let sat_expected = format!("{:?}", SatResult::Sat);
+        assert!(sat_expected == sat_string);
+        Ok(())
+    }
+
+    #[test]
+    /// Same as the test above, but testing conversion back and forth from FieldElement to BigUint and back
+    fn parse_to_string_test() -> Result<(), Box<dyn std::error::Error>> {
+        let backend = Cvc5Binary::new("src/theories/cvc5")?;
+        // Use solver's exec method to set the sort of finite field
+        // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
+        let mut solver = Solver::new(backend)?;
+        solver.set_logic(crate::Logic::QF_FF)?;
+        // Let prime be 5
+        let prime = BigUint::from(5u32);
+        solver.set_field_order(&prime)?;
+
+        let a = FieldElement::from(BigUint::from(5u32));
+        let b = FieldElement::from(BigUint::from(5u32));
+        solver.assert(a._eq(b))?;
+
+        let parsed_a = FieldElement::to_biguint(&a);
+        let parsed_b = FieldElement::to_biguint(&b);
+
+        println!("Debug parsed_a {:?}", parsed_a);
+        println!("Debug parsed_b {:?}", parsed_b);
+        assert!(parsed_a == parsed_b);
 
         let sat_result = solver.check_sat()?;
         println!("Debug Sat {:?}", sat_result);
