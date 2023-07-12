@@ -175,7 +175,11 @@ mod tests {
         println!("Debug sat {:?}", sat_result);
         let sat_string = format!("{:?}", sat_result);
         let sat_expected = format!("{:?}", SatResult::Sat);
-        assert!(sat_expected == sat_string);  
+        assert!(sat_expected == sat_string); 
+
+        // Test getmodel
+        let model = solver.get_model()?;
+        println!("Debug model {:?}", model); 
 
         Ok(())
     }

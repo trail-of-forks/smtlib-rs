@@ -23,6 +23,9 @@ async-trait = { version = "0.1.61", optional = true }
 itertools = "0.10.5"
 logos = "0.12.1"
 miette = { version = "5.5.0" }
+num-bigint = "0.4.3"
+num-traits = "0.2.15"
+regex = "1.9.1"
 serde = { version = "1.0.152", features = ["derive"], optional = true }
 thiserror = "1.0.38"
 z3-sys = { version = "0.7.1", features = ["static-link-z3"], optional = true }

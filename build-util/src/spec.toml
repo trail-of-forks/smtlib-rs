@@ -4,6 +4,7 @@
 numeral = { syntax = "<numeral>" }
 decimal = { syntax = "<decimal>" }
 hexadecimal = { syntax = "<hexadecimal>" }
+fieldelement = { syntax = "<fieldelement>" }
 binary = { syntax = "<binary>" }
 string = { syntax = "<string>" }
 

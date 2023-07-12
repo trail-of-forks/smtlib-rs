@@ -235,6 +235,7 @@ fn parse_raw_token(s: &str, field_idx: usize) -> Token {
                 "exists",
                 "forall",
                 "HEXADECIMAL",
+                "FIELDELEMENT",
                 "let",
                 "match",
                 "NUMERAL",

@@ -1,4 +1,7 @@
 use crate::parse::{ParseError, Parser, Token};
+use regex::Regex;
+use num_bigint::BigUint;
+use num_traits::Num;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -69,6 +72,35 @@ impl Hexadecimal {
         i64::from_str_radix(&self.0[2..], 16)
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct Fieldelement(pub String);
+impl std::fmt::Display for Fieldelement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+impl SmtlibParse for Fieldelement {
+    fn is_start_of(offset: usize, tokens: &mut Parser) -> bool {
+        tokens.nth(offset) == Token::Fieldelement
+    }
+    fn parse(tokens: &mut Parser) -> Result<Self, ParseError> {
+        Ok(Self(tokens.expect(Token::Fieldelement)?.into()))
+    }
+}
+impl Fieldelement {
+    pub fn parse(&self) -> Result<BigUint, std::num::ParseIntError> {
+        let re = Regex::new(r"f[0-9]+").unwrap();
+        let s = self.to_string();
+        let relevant_part = re.find(&s.as_str()).unwrap().as_str();
+        
+        // Convert to BigUint
+        let big_u = BigUint::from_str_radix(relevant_part, 10).expect("Invalid number");
+        Ok(big_u)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Binary(pub String);

@@ -62,6 +62,7 @@ impl<const M: usize> TryFrom<BitVec<M>> for i64 {
                 ast::SpecConstant::Hexadecimal(h) => h.parse(),
                 ast::SpecConstant::Binary(b) => b.parse(),
                 ast::SpecConstant::String(_) => todo!(),
+                ast::SpecConstant::Fieldelement(_) => todo!(),
             },
             _ => todo!(),
         }

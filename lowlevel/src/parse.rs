@@ -22,6 +22,12 @@ pub(crate) enum Token {
     #[regex("#x[0-9a-fA-F]+")]
     Hexadecimal,
 
+    /// Field Elements come in the form of f(numeral)m(numeral)
+    /// where the first numeral is the value of the field element
+    /// and the second numeral is the modulus of the field element.
+    #[regex("#f[0-9]+m[0-9]+")]
+    Fieldelement,
+
     /// A ⟨binary⟩ is a non-empty sequence of the characters 0 and 1 preceded by
     /// the characters #b.
     #[regex("#b[01]+")]
