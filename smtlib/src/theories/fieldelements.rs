@@ -69,12 +69,14 @@ impl FieldElement {
         fun(op, vec![self.into(), other.into()]).into()
     }
 
-    fn to_biguint(&self) -> BigUint {
+    // Turn a FieldElement into a BigUint
+    pub fn to_biguint(&self) -> BigUint {
         // Remove irrelevant parts using a regex to match BigUints
         let re = Regex::new(r"[0-9]+").unwrap();
         let s = self.to_string();
         let relevant_part = re.find(&s.as_str()).unwrap().as_str();
         
+        // Convert to BigUint
         let big_u = BigUint::from_str_radix(relevant_part, 10).expect("Invalid number");
         big_u
     }
