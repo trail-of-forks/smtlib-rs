@@ -35,7 +35,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the solver with the Z3 backend. The "z3" string refers the
     // to location of the already installed `z3` binary. In this case, the
     // binary is in the path.
-    let mut solver = Solver::new(Z3Binary::new("z3")?)?;
+    // Additionally, specify whether or not the solver should produce verbose outputs.
+    let mut solver = Solver::new(Z3Binary::new("z3")?, false)?;
 
     // Declare two new variables
     let x = Int::from_name("x");

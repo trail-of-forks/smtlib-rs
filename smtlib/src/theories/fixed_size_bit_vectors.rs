@@ -240,7 +240,7 @@ mod tests {
         let c = BitVec::from_name("c");
         let d = BitVec::from([true, false, true, true, false, true]);
 
-        let mut solver = Solver::new(Z3Binary::new("z3")?)?;
+        let mut solver = Solver::new(Z3Binary::new("z3")?, false)?;
 
         solver.assert(a._eq(!d))?;
         solver.assert(b._eq(a.extract::<5, 2>()))?;
@@ -264,7 +264,7 @@ mod tests {
     //     let b = BitVec::<6>::from_name("b");
     //     let c = BitVec::<6>::from_name("c");
 
-    //     let mut solver = Solver::new(Z3Binary::new("z3")?)?;
+    //     let mut solver = Solver::new(Z3Binary::new("z3")?, false)?;
 
     //     solver.assert(a._eq(BitVec::<6>::from(10)))?;
     //     solver.assert(b._eq(BitVec::<6>::from(3)))?;

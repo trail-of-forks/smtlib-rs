@@ -21,7 +21,7 @@ fn queens<B: Backend>(backend: B) -> miette::Result<()> {
 
     let n = Int::from_name("N");
 
-    let mut solver = Solver::new(backend)?;
+    let mut solver = Solver::new(backend, false)?;
 
     solver.set_logic(Logic::QF_IDL)?;
 

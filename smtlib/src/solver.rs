@@ -16,10 +16,10 @@ use crate::{Bool, Error, Logic, Model, SatResult, SatResultWithModel};
 /// ```
 /// # use smtlib::{Int, Sort};
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// // 1. Set up the backend (in this case z3)
+/// // 1. Set up the backend (in this case z3, and specify whether to be verbose)
 /// let backend = smtlib::backend::Z3Binary::new("z3")?;
 /// // 2. Set up the solver
-/// let mut solver = smtlib::Solver::new(backend)?;
+/// let mut solver = smtlib::Solver::new(backend, false)?;
 /// // 3. Declare the necessary constants
 /// let x = Int::from_name("x");
 /// // 4. Add assertions to the solver
@@ -51,9 +51,9 @@ where
     ///
     /// The read more about which backends are available, check out the
     /// documentation of the [`backend`] module.
-    pub fn new(backend: B) -> Result<Self, Error> {
+    pub fn new(backend: B, verbose: bool) -> Result<Self, Error> {
         Ok(Self {
-            driver: Driver::new(backend, false)?,
+            driver: Driver::new(backend, verbose)?,
             decls: Default::default(),
         })
     }

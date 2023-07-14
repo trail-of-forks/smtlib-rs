@@ -182,14 +182,10 @@ impl Model {
     /// ```
     /// # use smtlib::{Int, Sort};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let mut solver = smtlib::Solver::new(smtlib::backend::Z3Binary::new("z3")?)?;
+    /// # let mut solver = smtlib::Solver::new(smtlib::backend::Z3Binary::new("z3")?, false)?;
     /// let x = Int::from_name("x");
     /// solver.assert(x._eq(12))?;
     /// let model = solver.check_sat_with_model()?.expect_sat()?;
-    /// match model.eval(x) {
-    ///     Some(x) => println!("This is the value of x: {x}"),
-    ///     None => panic!("Oh no! This should never happen, as x was part of an assert"),
-    /// }
     /// # Ok(())
     /// # }
     /// ```

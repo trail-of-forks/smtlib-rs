@@ -109,7 +109,7 @@ mod tests {
         let backend = Cvc5Binary::new("src/theories/cvc5")?;
         // Use solver's exec method to set the sort of finite field
         // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
-        let mut solver = Solver::new(backend)?;
+        let mut solver = Solver::new(backend, false)?;
         solver.set_logic(crate::Logic::QF_FF)?;
         // Let prime be 5
         let prime = BigUint::from(5u32);
@@ -148,7 +148,7 @@ mod tests {
         let backend = Cvc5Binary::new("src/theories/cvc5")?;
         // Use solver's exec method to set the sort of finite field
         // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
-        let mut solver = Solver::new(backend)?;
+        let mut solver = Solver::new(backend, false)?;
         solver.set_logic(crate::Logic::QF_FF)?;
         // Let prime be 5
         let prime = BigUint::from(5u32);
@@ -189,7 +189,7 @@ mod tests {
         let backend = Cvc5Binary::new("src/theories/cvc5")?;
         // Use solver's exec method to set the sort of finite field
         // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
-        let mut solver = Solver::new(backend)?;
+        let mut solver = Solver::new(backend, false)?;
         solver.set_logic(crate::Logic::QF_FF)?;
         // Let prime be 5
         let prime = BigUint::from(5u32);
@@ -213,7 +213,7 @@ mod tests {
         let backend = Cvc5Binary::new("src/theories/cvc5")?;
         // Use solver's exec method to set the sort of finite field
         // Find a way to incorporate this into the start (or maybe able to stick with driver being public exposed)
-        let mut solver = Solver::new(backend)?;
+        let mut solver = Solver::new(backend, false)?;
         solver.set_logic(crate::Logic::QF_FF)?;
         // Let prime be 5
         let prime = BigUint::from(5u32);
