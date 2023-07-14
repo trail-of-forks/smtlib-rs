@@ -37,21 +37,24 @@ pub enum Error {
 #[derive(Debug)]
 pub struct Driver<B> {
     backend: B,
+    verbose: bool,
 }
 
 impl<B> Driver<B>
 where
     B: Backend,
 {
-    pub fn new(backend: B) -> Result<Self, Error> {
-        let mut driver = Self { backend };
+    pub fn new(backend: B, verbose: bool) -> Result<Self, Error> {
+        let mut driver = Self { backend, verbose };
 
         driver.exec(&Command::SetOption(ast::Option::PrintSuccess(true)))?;
 
         Ok(driver)
     }
     pub fn exec(&mut self, cmd: &Command) -> Result<GeneralResponse, Error> {
-        println!("> {cmd}");
+        if self.verbose {
+            println!("> {cmd}");
+        }
         let res = self.backend.exec(cmd)?;
         let res = if let Some(res) = cmd.parse_response(&res)? {
             GeneralResponse::SpecificSuccessResponse(res)

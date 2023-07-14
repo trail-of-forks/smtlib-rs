@@ -53,7 +53,7 @@ where
     /// documentation of the [`backend`] module.
     pub fn new(backend: B) -> Result<Self, Error> {
         Ok(Self {
-            driver: Driver::new(backend)?,
+            driver: Driver::new(backend, false)?,
             decls: Default::default(),
         })
     }
