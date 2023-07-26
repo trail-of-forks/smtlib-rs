@@ -1,7 +1,5 @@
 #![doc = concat!("```ignore\n", include_str!("./FieldElements.smt2"), "```")]
 
-use std::str::FromStr;
-
 use smtlib_lowlevel::{
     ast::{self, Identifier, Term},
     lexicon::Symbol,
@@ -38,6 +36,14 @@ impl From<FieldElement> for Dynamic {
     }
 }
 
+impl PartialEq for FieldElement {
+    fn eq(&self, other: &Self) -> bool {
+        let self_string = self.to_biguint();
+        let other_string = other.to_biguint();
+        self_string == other_string
+    }
+}
+
 impl From<FieldElement> for Term {
     fn from(i: FieldElement) -> Self {
         i.0.clone()
@@ -69,7 +75,7 @@ impl FieldElement {
         fun(op, vec![self.into(), other.into()]).into()
     }
 
-    // Turn a FieldElement into a BigUint
+    /// Turn a FieldElement into a BigUint
     pub fn to_biguint(&self) -> BigUint {
         // Remove irrelevant parts using a regex to match BigUints
         let re = Regex::new(r"[0-9]+").unwrap();
@@ -197,6 +203,7 @@ mod tests {
 
         let a = FieldElement::from(BigUint::from(5u32));
         let b = FieldElement::from(BigUint::from(5u32));
+        assert!(a == b);
         solver.assert(a._eq(b))?;
 
         let sat_result = solver.check_sat()?;
